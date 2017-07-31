@@ -23,6 +23,20 @@ public class Hero {
     private Map<SuperPower, Integer> powers = new HashMap();
     private List<Organization> orgs = new ArrayList();
     private boolean goodHero;
+    private String goodOrEvil;
+    
+    private String setGoodOrEvil(Boolean input){
+        if (input == true) {
+            goodOrEvil = "Good";
+        }else {
+            goodOrEvil = "Evil";
+        }
+        return goodOrEvil;
+    }
+    
+    public String getGoodOrEvil() {
+        return goodOrEvil;
+    }
 
     public int getHeroId() {
         return heroId;
@@ -78,6 +92,7 @@ public class Hero {
 
     public void setGoodHero(boolean goodHero) {
         this.goodHero = goodHero;
+        setGoodOrEvil(goodHero);
     }
     
     

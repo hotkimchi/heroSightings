@@ -5,6 +5,7 @@
  */
 package com.sg.herosightings.dao;
 
+import com.sg.herosightings.dao.dto.Hero;
 import com.sg.herosightings.dao.dto.Location;
 import com.sg.herosightings.dao.dto.Sighting;
 import java.time.LocalDate;
@@ -23,4 +24,6 @@ public interface SightingInfoDbDao {
     List<Sighting> getAllSightings();
     List<Sighting> getSightingsByDate(LocalDate date);
     List<Sighting> getSightingsByLocation(Location local);
+    List<Sighting> getSightingsByHero (Hero hero);
+    List<Sighting> getLastTenSightings();
 }

@@ -5,6 +5,7 @@
  */
 package com.sg.herosightings.dao;
 
+import com.sg.herosightings.dao.dto.Hero;
 import com.sg.herosightings.dao.dto.Location;
 import com.sg.herosightings.dao.dto.Organization;
 import java.sql.ResultSet;
@@ -34,17 +35,24 @@ public class LocationDbDaoImpl implements LocationInfoDbDao {
             = "UPDATE location SET location_name = ?, description = ?, address = ?, "
             + "latitude = ?, longitude = ? WHERE location_id = ?";
     private static final String SQL_GET_LOCATION_BY_ID
-            = "SELECT * FROM location WHERE location_id = ?";
+            = "SELECT DISTINCT * FROM location WHERE location_id = ?";
     private static final String SQL_GET_ALL_LOCATIONS
-            = "SELECT * FROM location";
+            = "SELECT DISTINCT * FROM location";
     private static final String SQL_SELECT_LOCATIONS_BY_ORG
-            = "SELECT * FROM location WHERE organization_id = ?";
+            = "SELECT DISTINCT * FROM location WHERE organization_id = ?";
     private static final String SQL_DELETE_SIGHTING_BY_LOCATION
             = "DELETE FROM sighting WHERE location_id = ?";
     private static final String SQL_SELECT_LOCATION_BY_DATE
-            = "SELECT l.location_name, l.description, l.address, l.latitude, l.longitude, l.location_id FROM location l "
+            = "SELECT DISTINCT l.location_name, l.description, l.address, l.latitude, l.longitude, l.location_id FROM location l "
             + "JOIN sighting s ON l.location_id = s.location_id "
             + "WHERE s.date = ?";
+    private static final String SQL_SELECT_LOCATION_BY_SIGHTING
+            = "SELECT DISTINCT l.location_name, l.description, l.address, l.latitude, l.longitude, l.location_id FROM location l "
+            + "JOIN sighting s ON l.location_id = s.location_id WHERE s.sighting_id = ?";
+    private static final String SQL_SELECT_LOCATION_BY_HERO
+            = "SELECT DISTINCT l.location_name, l.description, l.address, l.latitude, l.longitude, l.location_id FROM location l "
+            + "JOIN sighting s ON l.location_id = s.Location_id JOIN sightinghero sh ON s.sighting_id = sh.sighting_id "
+            + "WHERE sh.superhero_id = ?";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -118,12 +126,26 @@ public class LocationDbDaoImpl implements LocationInfoDbDao {
     public List<Location> getAllLocalsBySightDate(LocalDate date) {
         return jdbcTemplate.query(SQL_SELECT_LOCATION_BY_DATE, new LocationMapper(), java.sql.Date.valueOf(date));
     }
+    
+    @Override
+    public Location getLocalBySightId(int sightId) {
+        try {
+            return jdbcTemplate.queryForObject(SQL_SELECT_LOCATION_BY_SIGHTING, new LocationMapper(), sightId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
 
     @Override
     public List<Location> getAllLocalsByOrg(Organization org) {
         List<Location> localList = jdbcTemplate.query(SQL_SELECT_LOCATIONS_BY_ORG,
                 new LocationMapper(), org.getOrganizationId());
         return localList;
+    }
+    
+    @Override
+    public List<Location> getAllLocalsByHero(Hero hero) {
+        return jdbcTemplate.query(SQL_SELECT_LOCATION_BY_HERO, new LocationMapper(), hero.getHeroId());
     }
 
     private static final class LocationMapper implements RowMapper<Location> {
@@ -134,8 +156,8 @@ public class LocationDbDaoImpl implements LocationInfoDbDao {
             local.setLocalName(rs.getString("location_name"));
             local.setDescription(rs.getString("description"));
             local.setAddress(rs.getString("address"));
-            local.setLatitude(rs.getDouble("latitude"));
-            local.setLongitude(rs.getDouble("longitude"));
+            local.setLatitude(rs.getFloat("latitude"));
+            local.setLongitude(rs.getFloat("longitude"));
             local.setLocationId(rs.getInt("location_id"));
             return local;
         }

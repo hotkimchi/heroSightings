@@ -5,6 +5,7 @@
  */
 package com.sg.herosightings.dao;
 
+import com.sg.herosightings.dao.dto.Hero;
 import com.sg.herosightings.dao.dto.Location;
 import com.sg.herosightings.dao.dto.Sighting;
 import java.sql.ResultSet;
@@ -28,15 +29,22 @@ public class SightingDbDaoImpl implements SightingInfoDbDao{
     private static final String SQL_DELETE_SIGHTING
             = "DELETE FROM sighting WHERE sighting_id = ?";
     private static final String SQL_GET_SIGHTING_BY_ID
-            = "SELECT * FROM sighting WHERE sighting_id = ?";
+            = "SELECT DISTINCT * FROM sighting WHERE sighting_id = ?";
     private static final String SQL_GET_ALL_SIGHTINGS
-            = "SELECT * FROM sighting";
+            = "SELECT DISTINCT * FROM sighting";
     private static final String SQL_DELETE_SIGHTING_HERO
             = "DELETE FROM sightinghero WHERE sighting_id = ?";
     private static final String SQL_SELECT_SIGHTING_BY_LOCATION
-            = "SELECT s.date, s.sighting_id FROM sighting s WHERE s.location_id = ?";
+            = "SELECT DISTINCT s.date, s.sighting_id FROM sighting s WHERE s.location_id = ?";
     private static final String SQL_SELECT_SIGHTING_BY_DATE
-            = "SELECT s.date, s.sighting_id FROM sighting s WHERE s.date = ?";
+            = "SELECT DISTINCT s.date, s.sighting_id FROM sighting s WHERE s.date = ?";
+    private static final String SQL_SELECT_SIGHTING_BY_HERO
+            = "SELECT DISTINCT s.date, s.sighting_id FROM sighting s JOIN sightinghero sh ON s.sighting_id = sh.sighting_id WHERE sh.superhero_id = ?";
+    private static final String SQL_INSERT_SIGHTING_HERO
+            = "INSERT INTO sightinghero (sighting_id, superhero_id) "
+            + "VALUES (?, ?)";
+    private static final String SQL_SELECT_LAST_TEN_SIGHTING
+            = "SELECT DISTINCT date, sighting_id FROM sighting ORDER BY date DESC LIMIT 0, 10";
     
     private JdbcTemplate jdbcTemplate;
 
@@ -52,7 +60,15 @@ public class SightingDbDaoImpl implements SightingInfoDbDao{
                 java.sql.Date.valueOf(sight.getDate()));
         int id = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         sight.setSightingId(id);
+        setHeroesSighted(sight);
         return getSighting(id);
+    }
+    
+    private void setHeroesSighted(Sighting sight) {
+        List<Hero> heroes = sight.getHeroes();
+        for (Hero hero : heroes) {
+            jdbcTemplate.update(SQL_INSERT_SIGHTING_HERO, sight.getSightingId(), hero.getHeroId());
+        }
     }
 
     @Override
@@ -92,6 +108,16 @@ public class SightingDbDaoImpl implements SightingInfoDbDao{
     @Override
     public List<Sighting> getSightingsByLocation(Location local) {
         return jdbcTemplate.query(SQL_SELECT_SIGHTING_BY_LOCATION, new SightingMapper(), local.getLocationId());
+    }
+    
+    @Override 
+    public List<Sighting> getSightingsByHero (Hero hero) {
+        return jdbcTemplate.query(SQL_SELECT_SIGHTING_BY_HERO, new SightingMapper(), hero.getHeroId());
+    }
+    
+    @Override
+    public List<Sighting> getLastTenSightings() {
+        return jdbcTemplate.query(SQL_SELECT_LAST_TEN_SIGHTING, new SightingMapper());
     }
     
     private static final class SightingMapper implements RowMapper<Sighting> {

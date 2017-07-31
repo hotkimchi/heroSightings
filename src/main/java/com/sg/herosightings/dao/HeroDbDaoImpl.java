@@ -38,7 +38,7 @@ public class HeroDbDaoImpl implements HeroInfoDbDao {
     private static final String SQL_GET_HERO_BY_ID
             = "SELECT * FROM superhero WHERE superhero_id = ?";
     private static final String SQL_GET_ALL_HEROES
-            = "SELECT * FROM superhero";
+            = "SELECT DISTINCT * FROM superhero";
     private static final String SQL_DELETE_HERO_ORG
             = "DELETE FROM organizationsuperhero WHERE superhero_id = ?";
     private static final String SQL_DELETE_HERO_SIGHTING
@@ -60,23 +60,26 @@ public class HeroDbDaoImpl implements HeroInfoDbDao {
             = "UPDATE superherosuperpower SET power_level = ? "
             + "WHERE superhero_id = ? AND superpower_id = ?";
     private static final String SQL_SELECT_HERO_BY_DATE
-            = "SELECT h.hero_name, h.description, h.good_hero, h.superhero_id FROM superhero h "
+            = "SELECT DISTINCT h.hero_name, h.description, h.good_hero, h.superhero_id FROM superhero h "
             + "JOIN sightinghero sh ON h.superhero_id = sh.superhero_id "
             + "JOIN sighting s ON s.sighting_id = sh.sighting_id "
-            + "JOIN location l ON l.location_id = s.location_id "
             + "WHERE s.date = ?";
-    private static final String SQL_SELECT_HERO_BY_LOCATION
-            = "SELECT h.hero_name, h.description, h.good_hero, h.superhero_id FROM superhero h "
+    private static final String SQL_SELECT_HERO_BY_SIGHTING
+            = "SELECT DISTINCT h.hero_name, h.description, h.good_hero, h.superhero_id FROM superhero h "
             + "JOIN sightinghero sh ON h.superhero_id = sh.superhero_id "
             + "JOIN sighting s ON s.sighting_id = sh.sighting_id "
-            + "JOIN location l ON l.location_id = s.location_id "
-            + "WHERE l.location_id = ?";
+            + "WHERE s.sighting_id = ?";
+    private static final String SQL_SELECT_HERO_BY_LOCATION
+            = "SELECT DISTINCT h.hero_name, h.description, h.good_hero, h.superhero_id FROM superhero h "
+            + "JOIN sightinghero sh ON h.superhero_id = sh.superhero_id "
+            + "JOIN sighting s ON s.sighting_id = sh.sighting_id "
+            + "WHERE s.location_id = ?";
     private static final String SQL_SELECT_HERO_BY_ORG
-            = "SELECT  h.hero_name, h.description, h.good_hero, h.superhero_id FROM superhero h "
+            = "SELECT DISTINCT h.hero_name, h.description, h.good_hero, h.superhero_id FROM superhero h "
             + "JOIN organizationsuperhero oh ON h.superhero_id = oh.superhero_id "
             + "WHERE oh.organization_id = ?";
     private static final String SQL_SELECT_HERO_BY_POWER
-            = "SELECT h.hero_name, h.description, h.good_hero, h.superhero_id FROM superhero h "
+            = "SELECT DISTINCT h.hero_name, h.description, h.good_hero, h.superhero_id FROM superhero h "
             + "JOIN superherosuperpower hp ON h.superhero_id = hp.superHero_id "
             + "WHERE hp.superpower_id = ?";
 
@@ -108,9 +111,9 @@ public class HeroDbDaoImpl implements HeroInfoDbDao {
         }
         addSuperPowerToHero(hero.getHeroId(), powers);
         updatePowerLevel(hero, powers);
-        for (Sighting sight : sights) {
-            addSightingForHero(sight.getSightingId(), hero);
-        }
+//        for (Sighting sight : sights) {
+//            addSightingForHero(sight.getSightingId(), hero);
+//        }
     }
 
     private void addHeroesToOrg(int orgId, Hero hero) {
@@ -209,6 +212,11 @@ public class HeroDbDaoImpl implements HeroInfoDbDao {
     public List<Hero> getHeroesBySightingDate(LocalDate date) {
         return jdbcTemplate.query(SQL_SELECT_HERO_BY_DATE,
                 new HeroMapper(), java.sql.Date.valueOf(date));
+    }
+    
+    @Override
+    public List<Hero> getHeroesBySighting(Sighting sight) {
+        return jdbcTemplate.query(SQL_SELECT_HERO_BY_SIGHTING, new HeroMapper(), sight.getSightingId());
     }
 
     private static final class HeroMapper implements RowMapper<Hero> {

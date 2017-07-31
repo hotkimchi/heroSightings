@@ -9,7 +9,11 @@ import com.sg.herosightings.dao.dto.Hero;
 import com.sg.herosightings.dao.dto.SuperPower;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -35,7 +39,12 @@ public class PowerDbDaoImpl implements PowerInfoDbDao {
     private static final String SQL_DELETE_POWER_HERO
             = "DELETE FROM superherosuperpower WHERE superpower_id = ?";
     private static final String SQL_SELECT_POWER_BY_HERO
-            = "SELECT p.power_name, p.description, p.superpower_id FROM superpower p JOIN superherosuperpower hp ON p.superpower_id = hp.superpower_id WHERE hp.superhero_id = ?";
+            = "SELECT DISTINCT p.power_name, p.description, p.superpower_id FROM superpower p JOIN superherosuperpower hp ON "
+            + "p.superpower_id = hp.superpower_id WHERE hp.superhero_id = ?";
+    private static final String SQL_GET_POWER_LEVEL
+            = "SELECT power_level FROM superherosuperpower WHERE superhero_id = ? AND superpower_id = ?";
+    private static final String SQL_GET_POWERS_GREATER_THAN
+            = "SELECT DISTINCT * FROM superpower p JOIN superherosuperpower hp ON p.superpower_id = hp.superpower_id WHERE hp.power_level >= ?";
     
     private JdbcTemplate jdbcTemplate;
 
@@ -87,8 +96,26 @@ public class PowerDbDaoImpl implements PowerInfoDbDao {
     }
 
     @Override
-    public List<SuperPower> getPowersByHero(Hero hero) {
-        return jdbcTemplate.query(SQL_SELECT_POWER_BY_HERO, new PowerMapper(), hero.getHeroId());
+    public Map<SuperPower, Integer> getPowersByHero(Hero hero) {
+        List<SuperPower> powers =  jdbcTemplate.query(SQL_SELECT_POWER_BY_HERO, new PowerMapper(), hero.getHeroId());
+        Map<SuperPower, Integer> powerMap = new HashMap();
+        for (SuperPower power : powers) {
+            try{
+                Integer powerLevel = jdbcTemplate.queryForObject(SQL_GET_POWER_LEVEL, new PowerLevelMapper(), hero.getHeroId(), power.getSuperPowerId());
+                powerMap.put(power, powerLevel);
+            } catch (EmptyResultDataAccessException ex) {
+                return null;
+            }
+        }
+        return powerMap;
+    }
+    
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public Set<SuperPower> getPowersGreaterThan (int powerLevel) {
+        List<SuperPower> powers = jdbcTemplate.query(SQL_GET_POWERS_GREATER_THAN, new PowerMapper(), powerLevel);
+        Set<SuperPower> powerfulPowers = new HashSet(powers);
+        return powerfulPowers;
     }
     
     private static final class PowerMapper implements RowMapper<SuperPower> {
@@ -102,6 +129,16 @@ public class PowerDbDaoImpl implements PowerInfoDbDao {
             return power;
         }
 
+    }
+    
+    private static final class PowerLevelMapper implements RowMapper<Integer> {
+
+        @Override
+        public Integer mapRow(ResultSet rs, int i) throws SQLException {
+            int powerLevel = rs.getInt("power_level");
+            return powerLevel;
+        }
+        
     }
 
 }

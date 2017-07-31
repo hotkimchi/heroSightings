@@ -6,6 +6,7 @@
 package com.sg.herosightings.dao;
 
 import com.sg.herosightings.dao.dto.Hero;
+import com.sg.herosightings.dao.dto.Location;
 import com.sg.herosightings.dao.dto.Organization;
 import java.util.List;
 
@@ -16,10 +17,11 @@ import java.util.List;
 public interface OrgInfoDbDao {
     
     Organization insertOrg(Organization org);
-    Organization deleteOrg(int heroId);
+    Organization deleteOrg(int orgId);
     Organization updateOrg(Organization org);
-    Organization getOrg(int heroId);
+    Organization getOrg(int orgId);
     List<Organization> getAllOrgs();
     List<Organization> getOrgsByHero(Hero hero);
+    Organization getOrgByLocation(Location local);
     
 }

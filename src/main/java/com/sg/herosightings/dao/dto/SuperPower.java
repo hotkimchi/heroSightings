@@ -16,7 +16,7 @@ public class SuperPower {
     private int superPowerId;
     private String powerName;
     private String description;
-    private int powerLevel;
+    private List<Hero> heroes;
 
     public int getSuperPowerId() {
         return superPowerId;
@@ -42,13 +42,14 @@ public class SuperPower {
         this.description = description;
     }
 
-    public int getPowerLevel() {
-        return powerLevel;
+    public List<Hero> getHeroes() {
+        return heroes;
     }
 
-    public void setPowerLevel(int powerLevel) {
-        this.powerLevel = powerLevel;
+    public void setHeroes(List<Hero> heroes) {
+        this.heroes = heroes;
     }
+    
     
     
 }

@@ -109,10 +109,8 @@ public class HeroDbDaoImplTest {
         SuperPower seriousPunch = new SuperPower();
         notSeriousPunch.setPowerName("Not Serious Punch");
         notSeriousPunch.setDescription("Kills in one punch");
-        notSeriousPunch.setPowerLevel(500);
         seriousPunch.setPowerName("Serious Punch");
         seriousPunch.setDescription("Kills in one punch");
-        seriousPunch.setPowerLevel(1000);
         powerDao.insertSuperPower(notSeriousPunch);
         powerDao.insertSuperPower(seriousPunch);
         
@@ -128,8 +126,8 @@ public class HeroDbDaoImplTest {
         local.setLocalName("house");
         local.setDescription("In a bad neighborhood");
         local.setAddress("District 9");
-        local.setLatitude(56.86753);
-        local.setLongitude(-23.659392);
+        local.setLatitude(56.86753f);
+        local.setLongitude(-23.659392f);
         local.setOrg(org);
         localDao.insertLocal(local);
         
@@ -141,8 +139,8 @@ public class HeroDbDaoImplTest {
         sightDao.insertSighting(orgSight);
         
         Map<SuperPower, Integer> powers = new HashMap();
-        powers.put(powerDao.getSuperPower(notSeriousPunch.getSuperPowerId()), notSeriousPunch.getPowerLevel());
-        powers.put(powerDao.getSuperPower(seriousPunch.getSuperPowerId()), seriousPunch.getPowerLevel());
+        powers.put(powerDao.getSuperPower(notSeriousPunch.getSuperPowerId()), 1000);
+        powers.put(powerDao.getSuperPower(seriousPunch.getSuperPowerId()), 5000);
         
         hero.setPowers(powers);
         List<Organization> orgs = new ArrayList();
@@ -177,21 +175,19 @@ public class HeroDbDaoImplTest {
         SuperPower seriousPunch = new SuperPower();
         notSeriousPunch.setPowerName("Not Serious Punch");
         notSeriousPunch.setDescription("Kills in one punch");
-        notSeriousPunch.setPowerLevel(500);
         seriousPunch.setPowerName("Serious Punch");
         seriousPunch.setDescription("Kills in one punch");
-        seriousPunch.setPowerLevel(1000);
         powerDao.insertSuperPower(notSeriousPunch);
         powerDao.insertSuperPower(seriousPunch);
         
         Map<SuperPower, Integer> powers = new HashMap();
-        powers.put(powerDao.getSuperPower(notSeriousPunch.getSuperPowerId()), notSeriousPunch.getPowerLevel());
-        powers.put(powerDao.getSuperPower(seriousPunch.getSuperPowerId()), seriousPunch.getPowerLevel());
+        powers.put(powerDao.getSuperPower(notSeriousPunch.getSuperPowerId()), 1000);
+        powers.put(powerDao.getSuperPower(seriousPunch.getSuperPowerId()), 5000);
         
         hero.setPowers(powers);
         heroDao.insertHero(hero);
         
-        assertEquals(powerDao.getPowersByHero(hero).size(), 2);
+        assertEquals(powerDao.getPowersByHero(hero).size(), hero.getPowers().size());
         heroDao.removePowerFromHero(hero, seriousPunch);
         assertEquals(powerDao.getPowersByHero(hero).size(), 1);
     }
@@ -212,10 +208,8 @@ public class HeroDbDaoImplTest {
         SuperPower seriousPunch = new SuperPower();
         notSeriousPunch.setPowerName("Not Serious Punch");
         notSeriousPunch.setDescription("Kills in one punch");
-        notSeriousPunch.setPowerLevel(500);
         seriousPunch.setPowerName("Serious Punch");
         seriousPunch.setDescription("Kills in one punch");
-        seriousPunch.setPowerLevel(1000);
         powerDao.insertSuperPower(notSeriousPunch);
         powerDao.insertSuperPower(seriousPunch);
         
@@ -231,8 +225,8 @@ public class HeroDbDaoImplTest {
         local.setLocalName("house");
         local.setDescription("In a bad neighborhood");
         local.setAddress("District 9");
-        local.setLatitude(56.86753);
-        local.setLongitude(-23.659392);
+        local.setLatitude(56.86753f);
+        local.setLongitude(-23.659392f);
         local.setOrg(org);
         localDao.insertLocal(local);
         
@@ -244,8 +238,8 @@ public class HeroDbDaoImplTest {
         sightDao.insertSighting(orgSight);
         
         Map<SuperPower, Integer> powers = new HashMap();
-        powers.put(powerDao.getSuperPower(notSeriousPunch.getSuperPowerId()), notSeriousPunch.getPowerLevel());
-        powers.put(powerDao.getSuperPower(seriousPunch.getSuperPowerId()), seriousPunch.getPowerLevel());
+        powers.put(powerDao.getSuperPower(notSeriousPunch.getSuperPowerId()), 1000);
+        powers.put(powerDao.getSuperPower(seriousPunch.getSuperPowerId()), 5000);
         
         hero.setPowers(powers);
         List<Organization> orgs = new ArrayList();
@@ -285,18 +279,16 @@ public class HeroDbDaoImplTest {
         SuperPower seriousPunch = new SuperPower();
         notSeriousPunch.setPowerName("Not Serious Punch");
         notSeriousPunch.setDescription("Kills in one punch");
-        notSeriousPunch.setPowerLevel(500);
         seriousPunch.setPowerName("Serious Punch");
         seriousPunch.setDescription("Kills in one punch");
-        seriousPunch.setPowerLevel(1000);
         powerDao.insertSuperPower(notSeriousPunch);
         powerDao.insertSuperPower(seriousPunch);
         notSeriousPunch.setDescription("Sometimes kills with One Punch");
         powerDao.updateSuperPower(notSeriousPunch);
         assertEquals(powerDao.getSuperPower(notSeriousPunch.getSuperPowerId()).getDescription(), notSeriousPunch.getDescription());
         Map<SuperPower, Integer> powers = new HashMap();
-        powers.put(powerDao.getSuperPower(notSeriousPunch.getSuperPowerId()), notSeriousPunch.getPowerLevel());
-        powers.put(powerDao.getSuperPower(seriousPunch.getSuperPowerId()), seriousPunch.getPowerLevel());
+        powers.put(powerDao.getSuperPower(notSeriousPunch.getSuperPowerId()), 1000);
+        powers.put(powerDao.getSuperPower(seriousPunch.getSuperPowerId()), 5000);
         
         hero.setPowers(powers);
         hero.setGoodHero(false);
@@ -329,11 +321,11 @@ public class HeroDbDaoImplTest {
         local.setLocalName("house");
         local.setDescription("In a bad neighborhood");
         local.setAddress("District 9");
-        local.setLatitude(56.86753);
-        local.setLongitude(-23.659392);
+        local.setLatitude(56.86753f);
+        local.setLongitude(-23.659392f);
         localDao.insertLocal(local);
         local.setOrg(org);
-        local.setLongitude(45.987612);
+        local.setLongitude(45.987612f);
         localDao.updateLocal(local);
         List<Location> orgLocal = new ArrayList();
         orgLocal.add(local);
@@ -382,10 +374,8 @@ public class HeroDbDaoImplTest {
         SuperPower seriousPunch = new SuperPower();
         notSeriousPunch.setPowerName("Not Serious Punch");
         notSeriousPunch.setDescription("Kills in one punch");
-        notSeriousPunch.setPowerLevel(500);
         seriousPunch.setPowerName("Serious Punch");
         seriousPunch.setDescription("Kills in one punch");
-        seriousPunch.setPowerLevel(1000);
         powerDao.insertSuperPower(notSeriousPunch);
         powerDao.insertSuperPower(seriousPunch);
         List<SuperPower> powers = new ArrayList();
@@ -398,15 +388,15 @@ public class HeroDbDaoImplTest {
         local.setLocalName("house");
         local.setDescription("In a bad neighborhood");
         local.setAddress("District 9");
-        local.setLatitude(56.86753);
-        local.setLongitude(-23.659392);
+        local.setLatitude(56.86753f);
+        local.setLongitude(-23.659392f);
         localDao.insertLocal(local);
         Location otherLocal = new Location();
         otherLocal.setLocalName("Bar");
         otherLocal.setDescription("In a good neighborhood");
         otherLocal.setAddress("District 9");
-        otherLocal.setLatitude(46.86753);
-        otherLocal.setLongitude(-3.659392);
+        otherLocal.setLatitude(46.86753f);
+        otherLocal.setLongitude(-3.659392f);
         localDao.insertLocal(otherLocal);
         List<Location> locals = new ArrayList();
         locals.add(local);
@@ -454,26 +444,43 @@ public class HeroDbDaoImplTest {
         local.setLocalName("house");
         local.setDescription("In a bad neighborhood");
         local.setAddress("District 9");
-        local.setLatitude(56.86753);
-        local.setLongitude(-23.659392);
+        local.setLatitude(56.86753f);
+        local.setLongitude(-23.659392f);
         localDao.insertLocal(local);
         Location otherLocal = new Location();
         otherLocal.setLocalName("Bar");
         otherLocal.setDescription("In a good neighborhood");
         otherLocal.setAddress("District 9");
-        otherLocal.setLatitude(46.86753);
-        otherLocal.setLongitude(-3.659392);
+        otherLocal.setLatitude(46.86753f);
+        otherLocal.setLongitude(-3.659392f);
         localDao.insertLocal(otherLocal);
+        
+        Hero hero = new Hero();
+        hero.setHeroName("One Punch");
+        hero.setDescription("A Hero looking for fun and profit");
+        hero.setGoodHero(true);
+        heroDao.insertHero(hero);
+        Hero evilHero = new Hero();
+        evilHero.setHeroName("One Kick");
+        evilHero.setDescription("A Hero looking for fun and profit");
+        evilHero.setGoodHero(false);
+        heroDao.insertHero(evilHero);
+        
+        List<Hero> heroes = new ArrayList();
+        heroes.add(hero);
+        heroes.add(evilHero);
         
         Sighting orgSight = new Sighting();
         LocalDate date = LocalDate.parse("2017-05-02");
         orgSight.setDate(date);
         orgSight.setLocation(local);
+        orgSight.setHeroes(heroes);
         sightDao.insertSighting(orgSight);
         Sighting sight = new Sighting();
         LocalDate otherDate = LocalDate.parse("2016-05-02");
         sight.setDate(otherDate);
         sight.setLocation(otherLocal);
+        sight.setHeroes(heroes);
         sightDao.insertSighting(sight);
         Sighting localSight = new Sighting();
         localSight.setDate(date);
@@ -483,18 +490,8 @@ public class HeroDbDaoImplTest {
         sights.add(sight);
         sights.add(orgSight);
         
-        Hero hero = new Hero();
-        hero.setHeroName("One Punch");
-        hero.setDescription("A Hero looking for fun and profit");
-        hero.setGoodHero(true);
-        hero.setSightings(sights);
-        heroDao.insertHero(hero);
-        Hero evilHero = new Hero();
-        evilHero.setHeroName("One Kick");
-        evilHero.setDescription("A Hero looking for fun and profit");
-        evilHero.setGoodHero(false);
-        evilHero.setSightings(sights);
-        heroDao.insertHero(evilHero);
+        
+        
         
         assertEquals(heroDao.getHeroesByLocation(local).get(0).getHeroId(), hero.getHeroId());
         assertEquals(heroDao.getHeroesByLocation(otherLocal).size(), 2);
@@ -503,7 +500,6 @@ public class HeroDbDaoImplTest {
         
         assertEquals(localDao.getAllLocalsBySightDate(date).get(0).getLocationId(), local.getLocationId());
         assertEquals(localDao.getAllLocalsBySightDate(otherDate).get(0).getLocationId(), otherLocal.getLocationId());
-        assertEquals(localDao.getAllLocalsBySightDate(date).size(), 2);
         
         assertEquals(sightDao.getSightingsByDate(date).get(0).getSightingId(), orgSight.getSightingId());
         assertEquals(sightDao.getSightingsByLocation(local).size(), 2);

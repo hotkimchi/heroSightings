@@ -40,6 +40,8 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
     
+    <bean id="service" class="com.sg.herosightings.service.HeroSightingServiceImpl"/>
+    
     <bean id="heroDao" class="com.sg.herosightings.dao.HeroDbDaoImpl">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>

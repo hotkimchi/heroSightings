@@ -8,6 +8,8 @@ package com.sg.herosightings.dao;
 import com.sg.herosightings.dao.dto.Hero;
 import com.sg.herosightings.dao.dto.SuperPower;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -20,6 +22,7 @@ public interface PowerInfoDbDao {
     SuperPower updateSuperPower(SuperPower power);
     SuperPower getSuperPower(int powerId);
     List<SuperPower> getAllSuperPowers();
-    List<SuperPower> getPowersByHero(Hero hero);
+    Map<SuperPower, Integer> getPowersByHero(Hero hero);
+    Set<SuperPower> getPowersGreaterThan (int powerLevel);
     
 }

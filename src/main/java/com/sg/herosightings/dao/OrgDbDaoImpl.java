@@ -32,9 +32,9 @@ public class OrgDbDaoImpl implements OrgInfoDbDao {
             = "UPDATE organization SET organization_name = ?, description = ?, motto = ?, "
             + "contact_email = ?, contact_phone = ?, contact_other = ? WHERE organization_id = ?";
     private static final String SQL_GET_ORG_BY_ID
-            = "SELECT * FROM organization WHERE organization_id = ?";
+            = "SELECT DISTINCT * FROM organization WHERE organization_id = ?";
     private static final String SQL_GET_ALL_ORGS
-            = "SELECT * FROM organization";
+            = "SELECT DISTINCT * FROM organization";
     private static final String SQL_INSERT_ORG_HERO
             = "INSERT INTO organizationsuperhero (organization_id, superhero_id) "
             + "VALUES (?, ?)";
@@ -45,10 +45,14 @@ public class OrgDbDaoImpl implements OrgInfoDbDao {
     private static final String SQL_SET_LOCATION_ORG_NULL
             = "UPDATE location SET organization_id = null WHERE organization_id = ?";
     private static final String SQL_SELECT_ORG_BY_HERO
-            = "SELECT o.organization_name, o.description, o.motto, o.contact_email, "
+            = "SELECT DISTINCT o.organization_name, o.description, o.motto, o.contact_email, "
             + "o.contact_phone, o.contact_other, o.organization_id FROM organization o "
             + "JOIN organizationsuperhero oh ON o.organization_id = oh.organization_id "
             + "WHERE oh.superhero_id = ?";
+    private static final String SQL_SELECT_ORG_BY_LOCATION
+            = "SELECT DISTINCT o.organization_name, o.description, o.motto, o.contact_email, "
+            + "o.contact_phone, o.contact_other, o.organization_id FROM organization o "
+            + "JOIN location l ON o.organization_id = l.organization_id WHERE l.location_id = ?";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -134,6 +138,15 @@ public class OrgDbDaoImpl implements OrgInfoDbDao {
     public List<Organization> getOrgsByHero(Hero hero) {
         return jdbcTemplate.query(SQL_SELECT_ORG_BY_HERO,
                 new OrgMapper(), hero.getHeroId());
+    }
+
+    @Override
+    public Organization getOrgByLocation(Location local) {
+        try {
+            return jdbcTemplate.queryForObject(SQL_SELECT_ORG_BY_LOCATION, new OrgMapper(), local.getLocationId());
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     private static final class OrgMapper implements RowMapper<Organization> {

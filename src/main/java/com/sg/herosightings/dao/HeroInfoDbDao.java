@@ -8,6 +8,7 @@ package com.sg.herosightings.dao;
 import com.sg.herosightings.dao.dto.Hero;
 import com.sg.herosightings.dao.dto.Location;
 import com.sg.herosightings.dao.dto.Organization;
+import com.sg.herosightings.dao.dto.Sighting;
 import com.sg.herosightings.dao.dto.SuperPower;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,5 +29,6 @@ public interface HeroInfoDbDao {
     List<Hero> getHeroesByPower(SuperPower power);
     List<Hero> getHeroesByLocation(Location local);
     List<Hero> getHeroesBySightingDate(LocalDate date);
+    List<Hero> getHeroesBySighting(Sighting sight);
     
 }
